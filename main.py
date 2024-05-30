@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Union
 
 
 class EnergyCalculation(ABC):
@@ -26,6 +26,9 @@ class SolarPanel(EnergyCalculation):
     def energy_calculation(self) -> int:
         return self.area * self.efficiency * 15
 
+    def resource_depletion_rate(self) -> Union[float, int]:
+        return 100 / self.efficiency
+
 
 class WindTurbine(EnergyCalculation):
 
@@ -44,6 +47,9 @@ class WindTurbine(EnergyCalculation):
 
     def energy_calculation(self) -> int:
         return self.height * self.wind_speed_average * 150
+
+    def resource_depletion_rate(self) -> Union[float, int]:
+        return 1000 / (self.height * self.wind_speed_average)
 
 
 class HydroPlant(EnergyCalculation):
@@ -64,13 +70,20 @@ class HydroPlant(EnergyCalculation):
     def energy_calculation(self) -> int:
         return self.flow_rate * self.drop * 12
 
+    def resource_depletion_rate(self) -> Union[float, int]:
+        return self.flow_rate / self.drop
+
 
 class EnergySource:
     def __init__(self, strategy: EnergyCalculation):
         self.strategy = strategy
 
-    def get_annual_energy(self) -> str:
-        return f"{self.strategy.__class__.__name__} AnnualEnergyOutput {self.strategy.energy_calculation()}"
+    def get_energy_source_details(self) -> str:
+        return (
+           f"{self.strategy.__class__.__name__} "
+           f"AnnualEnergyOutput {self.strategy.energy_calculation()} "
+           f"ResourceDepletionRate {round(self.strategy.resource_depletion_rate(), 2)}"
+        )
 
 
 def get_energy_source(input_string: str) -> EnergySource:
@@ -96,4 +109,4 @@ if __name__ == '__main__':
     input_string = input("Enter data: ")
 
     energy_source = get_energy_source(input_string)
-    print(energy_source.get_annual_energy())
+    print(energy_source.get_energy_source_details())
