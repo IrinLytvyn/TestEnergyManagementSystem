@@ -1,5 +1,5 @@
 import unittest
-from main import SolarPanel, WindTurbine, HydroPlant, EnergySource, get_energy_source
+from main import SolarPanel, WindTurbine, HydroPlant, EnergySource, OffshoreWindTurbine, get_energy_source
 
 
 class TestSolarPanel(unittest.TestCase):
@@ -82,6 +82,21 @@ class TestGetEnergySource(unittest.TestCase):
         result = get_energy_source("WindTurbine Height 50 WindSpeedAverage 6")
         self.assertTrue(isinstance(result, EnergySource))
         self.assertTrue(isinstance(result.strategy, WindTurbine))
+
+    def test_offshore_wind_turbine(self):
+        result = get_energy_source("OffshoreWindTurbine Height 70 WindSpeedAverage 8 CorrosionFactor 0.2")
+        self.assertTrue(isinstance(result, EnergySource))
+        self.assertTrue(isinstance(result.strategy, OffshoreWindTurbine))
+        self.assertEqual(result.strategy.height, 70)
+
+    def test_offshore_wind_turbine_2(self):
+        result = get_energy_source("OffshoreWindTurbine Height 10 WindSpeedAverage 18 CorrosionFactor 0.12")
+        self.assertTrue(isinstance(result, EnergySource))
+        self.assertTrue(isinstance(result.strategy, OffshoreWindTurbine))
+        self.assertEqual(result.strategy.height, 10)
+        self.assertEqual(result.strategy.wind_speed_average, 18)
+        self.assertEqual(result.strategy.corrosion_factor, 0.12)
+
 
     def test_get_energy_source_bad(self):
         with self.assertRaises(ValueError):

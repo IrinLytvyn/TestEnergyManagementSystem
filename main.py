@@ -7,6 +7,10 @@ class EnergyCalculation(ABC):
     def energy_calculation(self):
         pass
 
+    @abstractmethod
+    def resource_depletion_rate(self):
+        pass
+
 
 class SolarPanel(EnergyCalculation):
 
@@ -74,6 +78,21 @@ class HydroPlant(EnergyCalculation):
         return self.flow_rate / self.drop
 
 
+class OffshoreWindTurbine(WindTurbine):
+
+    def __init__(self, height: float, wind_speed_average: float, corrosion_factor: float):
+        super().__init__(height, wind_speed_average)
+        self.corrosion_factor = corrosion_factor
+
+    @classmethod
+    def from_string(cls, parsed_string: List[str]) -> "OffshoreWindTurbine":
+        wind_turbine = WindTurbine.from_string(parsed_string)
+        for i in range(1, len(parsed_string), 2):
+            if parsed_string[i] == "CorrosionFactor":
+                corrosion_factor = parsed_string[i + 1]
+        return cls(float(wind_turbine.height), float(wind_turbine.wind_speed_average), float(corrosion_factor))
+
+
 class EnergySource:
     def __init__(self, strategy: EnergyCalculation):
         self.strategy = strategy
@@ -86,23 +105,27 @@ class EnergySource:
         )
 
 
+
 def get_energy_source(input_string: str) -> EnergySource:
     parsed_string = input_string.split()
     strategy_type = parsed_string[0]
 
     if strategy_type == "SolarPanel":
-        strategy_type = SolarPanel.from_string(parsed_string)
+        obj = SolarPanel.from_string(parsed_string)
 
     elif strategy_type == "WindTurbine":
-        strategy_type = WindTurbine.from_string(parsed_string)
+        obj = WindTurbine.from_string(parsed_string)
 
     elif strategy_type == "HydroPlant":
-        strategy_type = HydroPlant.from_string(parsed_string)
+        obj = HydroPlant.from_string(parsed_string)
+
+    elif strategy_type == "OffshoreWindTurbine":
+        obj = OffshoreWindTurbine.from_string(parsed_string)
 
     else:
         raise ValueError("Unknown energy source type")
 
-    return EnergySource(strategy_type)
+    return EnergySource(obj)
 
 
 if __name__ == '__main__':
