@@ -11,6 +11,13 @@ class EnergyCalculation(ABC):
     def resource_depletion_rate(self):
         pass
 
+    @staticmethod
+    def parse_property(parsed_string, property_name):
+        for i in range(1, len(parsed_string), 2):
+            if parsed_string[i] == property_name:
+                value = parsed_string[i + 1]
+        return value
+
 
 class SolarPanel(EnergyCalculation):
 
@@ -20,11 +27,8 @@ class SolarPanel(EnergyCalculation):
 
     @classmethod
     def from_string(cls, parsed_string: List[str]) -> "SolarPanel":
-        for i in range(1, len(parsed_string), 2):
-            if parsed_string[i] == "Area":
-                area = parsed_string[i + 1]
-            elif parsed_string[i] == "Efficiency":
-                efficiency = parsed_string[i + 1]
+        area = cls.parse_property(parsed_string, "Area")
+        efficiency = cls.parse_property(parsed_string, "Efficiency")
         return cls(int(area), int(efficiency))
 
     def energy_calculation(self) -> int:

@@ -1,5 +1,14 @@
 import unittest
-from main import SolarPanel, WindTurbine, HydroPlant, EnergySource, OffshoreWindTurbine, get_energy_source
+from main import SolarPanel, WindTurbine, HydroPlant, EnergySource, OffshoreWindTurbine, EnergyCalculation,  get_energy_source
+
+
+class TestEnergyCalculation(unittest.TestCase):
+    def test_parse_property(self):
+        parsed_string = ["HydroPlant", "AnnualEnergyOutput", "72000", "ResourceDepletionRate", "15.0"]
+        value = EnergyCalculation.parse_property(parsed_string, "AnnualEnergyOutput")
+        value2 = EnergyCalculation.parse_property(parsed_string, "ResourceDepletionRate")
+        self.assertEqual(value, "72000")
+        self.assertEqual(value2, "15.0")
 
 
 class TestSolarPanel(unittest.TestCase):
